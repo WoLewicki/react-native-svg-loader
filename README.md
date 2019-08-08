@@ -47,6 +47,8 @@ On iOS and Android, on dev mode you have to build app 2 times beacuse bundling i
 
 On Android, fast-image library is used because it gives access to xmls in drawable folder in android project, which is sadly not yet supported in Image component. If you want to keep the scalable images there, you should use something similar to the second image example in App.js, because fast-image doesn't rerender if uri is not changed.
 
+As of debug.keystore needed for Android, you can copy it from android/app in another project made by react-native init to this project's android/app and it should work just fine.
+
 Unused resources aren't currently removed, so you have to manually delete them from drawable/Image.xcassets folder in order to make the project clean. Remember that they are created for each svg file require in code and are named "wlgenxml"+name/"WLGenPDF"+name, so it is easy to find them.
 
 
