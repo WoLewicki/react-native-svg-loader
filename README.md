@@ -33,6 +33,16 @@ react-native run-ios             -- in another terminal window
 Also remember to add the signing team in XCode->General->Signing->Team
 and disable dead code stripping in release mode in XCode->Build Settings->Linking
 
+In order for release to work on iOS, you should change the build phases, so that bundled sources are added to the project before its' sources are compiled, like this:
+
+<p align="center" >
+  <kbd>
+    <img src="https://github.com/WoLewicki/react-native-svg-loader/blob/master/example/buildPhases.png" title="Build Phases" float="left">
+  </kbd>
+  <br>
+  <em>Build phases for release</em>
+</p>
+
 On iOS and Android, on dev mode you have to build app 2 times beacuse bundling is made after the app build, so there are no image sets or xmls at the time of building for the first time, although on release, bundling goes before build, so it should be ok there.
 
 On Android, fast-image library is used because it gives access to xmls in drawable folder in android project, which is sadly not yet supported in Image component. If you want to keep the scalable images there, you should use something similar to the second image example in App.js, because fast-image doesn't rerender if uri is not changed.
