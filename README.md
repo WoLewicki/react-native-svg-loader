@@ -55,5 +55,7 @@ Unused resources aren't currently removed, so you have to manually delete them f
 Used sources:
 
 https://github.com/DylanVann/react-native-fast-image - react-native-fast-image gh repository.
+
 https://github.com/Ashung/svg2vectordrawable         - svg to xml vector converter
+
 https://cairosvg.org/                                - svg to pdf converter
