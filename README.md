@@ -23,6 +23,11 @@ pod install (in ios folder)
 pip3 install cairosvg              -- adds availability to convert svg to pdf
 ```
 Build app 2 times in dev mode or once in release mode to see the images.
+```bash
+yarn start --reset-cache
+react-native run-ios             -- in another terminal window
+```
+
 Also remember to add the signing team in XCode->General->Signing->Team
 and disable dead code stripping in release mode in XCode->Build Settings->Linking
 
