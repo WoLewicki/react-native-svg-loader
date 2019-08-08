@@ -1,0 +1,123 @@
+diff --git a/node_modules/metro/src/Assets.js b/node_modules/metro/src/Assets.js
+index d052449..e0e86b0 100644
+--- a/node_modules/metro/src/Assets.js
++++ b/node_modules/metro/src/Assets.js
+@@ -263,18 +263,106 @@ function _getAssetData() {
+       : assetInfo.files[0];
+     const dimensions = isImage ? imageSize(isImageInput) : null;
+     const scale = assetInfo.scales[0];
+-    const assetData = {
+-      __packager_asset: true,
+-      fileSystemLocation: path.dirname(assetPath),
+-      httpServerLocation: assetUrlPath,
+-      width: dimensions ? dimensions.width / scale : undefined,
+-      height: dimensions ? dimensions.height / scale : undefined,
+-      scales: assetInfo.scales,
+-      files: assetInfo.files,
+-      hash: assetInfo.hash,
+-      name: assetInfo.name,
+-      type: assetInfo.type
+-    };
++
++    let assetData = null;
++    if(assetInfo.type === 'svg') { // NEW CODE
++      let projectRootPath; 
++      if(path.dirname(localPath) === '.'){ // dot only means that the asset is in the project root directory, so arguments[0] looks like projectRootPath/assetname.svg
++        projectRootPath = arguments[0].split('/'+assetInfo.name)[0];
++      }
++      else{ // asset is deeper in project structure, so we aggregate the dirs from the root to the asset and split by it, so we get only root path
++        projectRootPath = arguments[0].split('/'+path.dirname(localPath)+'/'+assetInfo.name)[0];
++      }
++
++      if(platform === 'ios') {
++        let filesInIOSDir = fs.readdirSync(`${projectRootPath}/ios`); // list files in ios project directory
++        let xcodeprojFile = filesInIOSDir.find(x=> x.match(/xcodeproj/g)); // find projectname.xcodeproj file
++        let projectName = xcodeprojFile.split('.')[0]; // get the filename from projectname.xcodeproj string
++        let taggedAssetName = 'WLGenPDF' + assetInfo.name;
++        let xcassetsFolderPath = `${projectRootPath}/ios/${projectName}/Images.xcassets`;
++        let imageSetName = `${taggedAssetName}.imageset`;
++        //contents file needed for xcassets
++        let contentJson = `{
++          "images" : [
++            {
++              "idiom" : "universal",
++              "filename" : "${taggedAssetName}.pdf"
++            }
++          ],
++          "info" : {
++            "version" : 1,
++            "author" : "xcode"
++          },
++          "properties" : {
++            "preserves-vector-representation" : true
++          }
++        }`;
++        //new path for asset in Image.xcassets in XCode project, path isn't used later in code, the asset is gained only through it's name
++        let newAbsoluteIOSPath = `${xcassetsFolderPath}/${taggedAssetName}.imageset/${taggedAssetName}.pdf`;      
++        const execSync = require('child_process').execSync;
++        let env = process.env;
++        env.LANG = "en_US.UTF-8";
++        env.LC_ALL = "en_US.UTF-8";
++        let imageSetPath = `${xcassetsFolderPath}/${imageSetName}`;
++        if (!fs.existsSync(imageSetPath)) {
++          execSync(`mkdir ${imageSetPath}`)
++          execSync(`echo '${contentJson}' > ${imageSetPath}/Contents.json`)
++          execSync(`cairosvg -o ${newAbsoluteIOSPath} ${assetInfo.files[0]}`, env, // pdf generation
++          function(err, stdout, stderr) {console.log(stdout, stderr, err)}); // env needed in release mode for python script
++        }
++        assetData = {
++          __packager_asset: true,
++          fileSystemLocation: newAbsoluteIOSPath, //new path - ImageSet in XCode project
++          httpServerLocation: assetUrlPath,
++          width: undefined,
++          height: undefined,
++          scales: assetInfo.scales,
++          files: [newAbsoluteIOSPath],
++          hash: assetInfo.hash,
++          name: taggedAssetName,
++          type: 'iOSpdf'
++        };
++      }
++      else if(platform === 'android'){
++        let taggedAssetName = 'wlgenxml' + assetInfo.name;
++        let resFolderPath = `${projectRootPath}/android/app/src/main/res/drawable`;
++        //new path for asset in drawable folder in android project, path isn't used later in code, the asset is gained only through it's name
++        let newAbsoluteAndroidPath = `${resFolderPath}/${taggedAssetName}.xml`; 
++        const execSync = require('child_process').execSync;
++        if (!fs.existsSync(resFolderPath)) {
++          execSync(`mkdir ${resFolderPath}`)
++        }
++        if (!fs.existsSync(newAbsoluteAndroidPath)) {
++          execSync(`s2v -i ${assetInfo.files[0]} -o ${newAbsoluteAndroidPath}`); // xml generation
++        }
++        assetData = {
++          __packager_asset: true,
++          fileSystemLocation: newAbsoluteAndroidPath,
++          httpServerLocation: assetUrlPath,
++          width: undefined,
++          height: undefined,
++          scales: assetInfo.scales,
++          files: [newAbsoluteAndroidPath],
++          hash: assetInfo.hash,
++          name: taggedAssetName,
++          type: 'androidXml'
++        };
++      }
++    }
++    if(!assetData) { // wasn't svg or something went wrong
++      assetData = {
++        __packager_asset: true,
++        fileSystemLocation: path.dirname(assetPath),
++        httpServerLocation: assetUrlPath,
++        width: dimensions ? dimensions.width / scale : undefined,
++        height: dimensions ? dimensions.height / scale : undefined,
++        scales: assetInfo.scales,
++        files: assetInfo.files,
++        hash: assetInfo.hash,
++        name: assetInfo.name,
++        type: assetInfo.type
++      };
++    }
+     return yield applyAssetDataPlugins(assetDataPlugins, assetData);
+   });
+   return _getAssetData.apply(this, arguments);

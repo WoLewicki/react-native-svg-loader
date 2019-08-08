@@ -1,0 +1,18 @@
+diff --git a/node_modules/react-native/Libraries/Image/resolveAssetSource.js b/node_modules/react-native/Libraries/Image/resolveAssetSource.js
+index dd9167a..7f2c5c0 100644
+--- a/node_modules/react-native/Libraries/Image/resolveAssetSource.js
++++ b/node_modules/react-native/Libraries/Image/resolveAssetSource.js
+@@ -95,6 +95,13 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
+     return null;
+   }
+ 
++  if(asset.type === 'iOSpdf'){ // NEW CODE
++    return {uri: asset.name}; // returning object, pretending it was source={{uri: asset.name}} like the first if in this
++  }
++  else if(asset.type === 'androidXml'){
++    return {uri: 'res:/drawable/' + asset.name};
++  }
++
+   const resolver = new AssetSourceResolver(
+     getDevServerURL(),
+     getScriptURL(),
