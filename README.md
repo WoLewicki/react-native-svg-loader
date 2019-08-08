@@ -11,8 +11,10 @@ npm install svg2vectordrawable -g   -- adds availability to convert svg to xml
 ```
 Build app 2 times in dev mode or once in release mode to see the images.
 ```bash
-react-native run-android for dev
-./gradlew installRelease in android folder for release
+yarn start
+react-native run-android        -- for dev (in another terminal window)
+or
+./gradlew installRelease          -- in android folder for release
 ```
 
 iOS:
@@ -24,7 +26,7 @@ pip3 install cairosvg              -- adds availability to convert svg to pdf
 ```
 Build app 2 times in dev mode or once in release mode to see the images.
 ```bash
-yarn start --reset-cache
+yarn start
 react-native run-ios             -- in another terminal window
 ```
 
