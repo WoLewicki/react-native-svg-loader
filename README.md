@@ -33,7 +33,7 @@ react-native run-ios             -- in another terminal window
 Also remember to add the signing team in XCode->General->Signing->Team
 and disable dead code stripping in release mode in XCode->Build Settings->Linking
 
-In order for release to work on iOS, you should change the build phases, so that bundled sources are added to the project before its' sources are compiled, like this:
+In order for release to work on iOS, you should change the build phases, so that bundle resources are added to the project before its' sources are compiled, like this:
 
 <p align="center" >
   <kbd>
